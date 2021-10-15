@@ -1,6 +1,7 @@
 package com.devsoft.springboot.backend.apirest.controllers;
 
 import com.devsoft.springboot.backend.apirest.entity.Cliente;
+import com.devsoft.springboot.backend.apirest.entity.Region;
 import com.devsoft.springboot.backend.apirest.services.IClienteService;
 import com.devsoft.springboot.backend.apirest.services.IUploadFileService;
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -48,6 +50,7 @@ public class ClienteController {
         return clienteService.findAll(pageable);
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @GetMapping("/clientes/{id}")
     public ResponseEntity<?> getClientById(@PathVariable Long id) {
 
@@ -69,6 +72,7 @@ public class ClienteController {
         return new ResponseEntity<Cliente>(cliente, HttpStatus.OK);
     }
 
+    @Secured("ROLE_ADMIN")
     @PostMapping("/clientes")
     public ResponseEntity<?> addClient(@Valid @RequestBody Cliente cliente, BindingResult result) {
 
@@ -98,6 +102,7 @@ public class ClienteController {
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
+    @Secured("ROLE_ADMIN")
     @PutMapping("/clientes/{id}")
     public ResponseEntity<?> updateClient(@Valid @RequestBody Cliente cliente, BindingResult result, @PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -127,6 +132,7 @@ public class ClienteController {
             clienteActual.setApellido(cliente.getApellido());
             clienteActual.setNombre(cliente.getNombre());
             clienteActual.setEmail(cliente.getEmail());
+            clienteActual.setRegion(cliente.getRegion());
             clienteUpdated = clienteService.save(clienteActual);
 
         } catch (DataAccessException e) {
@@ -141,6 +147,7 @@ public class ClienteController {
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.CREATED);
     }
 
+    @Secured("ROLE_ADMIN")
     @DeleteMapping("/clientes/{id}")
     public  ResponseEntity<?> deleteClient(@PathVariable Long id) {
         Map<String, Object> response = new HashMap<>();
@@ -165,6 +172,7 @@ public class ClienteController {
         return new ResponseEntity<Map<String, Object>>(response, HttpStatus.OK);
     }
 
+    @Secured({"ROLE_ADMIN", "ROLE_USER"})
     @PostMapping("/clientes/upload")
     public  ResponseEntity<?> upload(@RequestParam("archivo") MultipartFile archivo, @RequestParam("id") Long id){
         Map<String, Object> response = new HashMap<>();
@@ -210,5 +218,11 @@ public class ClienteController {
         HttpHeaders cabecera = new HttpHeaders();
         cabecera.add(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"");
         return new ResponseEntity<Resource>(resource, cabecera, HttpStatus.OK);
+    }
+
+    @Secured("ROLE_ADMIN")
+    @GetMapping("/clientes/regiones")
+    public List<Region> getAllRegions() {
+        return clienteService.findAllRegiones();
     }
 }
