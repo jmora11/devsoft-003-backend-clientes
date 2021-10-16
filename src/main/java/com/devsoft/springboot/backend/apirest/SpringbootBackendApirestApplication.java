@@ -18,10 +18,11 @@ public class SpringbootBackendApirestApplication implements CommandLineRunner {
 
 	@Override
 	public void run(String... args) throws Exception {
-		String password = "12345";
+		/*String password = "12345";
 		for(int i = 0; i < 2; i ++) {
 			String passworBrypt =passwordEncoder.encode(password);
 			System.out.println("PASSWORD: "+passworBrypt);
-		}
+		}*/
+		System.out.println("-- Hola -- DEVSOFT --");
 	}
 }
